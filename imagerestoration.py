@@ -33,7 +33,7 @@ ruined2.save("ruined.jpg")
 #D and h values
 D = .5
 h = 1
-
+b=[]
 #print(max(range(len(mask))))
 for i in range(len(mask)):
     #print(i)
@@ -42,42 +42,35 @@ for i in range(len(mask)):
         
         
         if mask[i][j]==0:
-
             n=0
-            if i+1 > len(mask):
-                u_1_0=0
-                n+=1
-            else:
-                u_1_0 = masked[i+1][j]
+            #if at edge/Neumann boundaries
+            if i-1<0:
+                pass
+            if i+1>len(mask):
+                pass
+            if j-1<0:
+                pass
+
+           
+            if j-1<len(mask[i]):
+                pass
+
+            #if next to other cell
+            if mask[i-1][j]==0:
+                pass
+            
+            if mask[i+1][j]==0:
+                pass
+            if mask[i][j-1]==0:
+                pass
+            if mask[i][j+1]==0:
+                pass
+
                 
-            if i-1 < 0:
-                n+=1
+            
+                
 
-                u__1_0=0
-            else:
-                u__1_0 = masked[i-1][j]
-
-            if j+1 > len(mask[i]):
-                u_0_1=0
-                n+=1
-            else:
-                u_0_1 = masked[i][j+1]
-        
-
-
-            if j-1 < 0:
-                u_0__1=0
-                n+=1
-            else:
-                u_0__1 = masked[i][j-1]
-            if n==4:
-                u_0_0=0
-            else:
-                u_0_0 = masked[i][j]
-
-            masked[i][j] =masked[i][j]+ D*h*(u_1_0+u__1_0+u_0_1+u_0__1-(4-n)*u_0_0)
-
-
+            masked[i][j]=
 
      
                 
@@ -105,6 +98,7 @@ for k in range(0, 1000):
                 masked[i][j] = masked[i][j] + D*h*(masked[i-1][j] + masked[i+1][j] + masked[i][j-1] + masked[i][j+1] - 4*masked[i][j])
                 
 """
+
 restored = Image.fromarray(masked)
 restored=restored.convert('L')
 restored.show()
