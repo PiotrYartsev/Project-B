@@ -10,7 +10,7 @@ import numpy as np
 from math import sqrt
 
 #convert to grayscale
-im = np.array(Image.open(r"C:\Users\max_n\Pictures\grayscale.jpg").convert('L'))
+im = np.array(Image.open(r"grayscale.jpg").convert('L'))
 ar = np.array(im)
 
 #create a mask with 1's containing a square of 0's
@@ -20,6 +20,9 @@ for i in range(1, 50):
 
 #overlay mask
 masked = mask*ar
+ruined = Image.fromarray(masked)
+ruined.show()
+
 
 #D and h values
 D = .5
