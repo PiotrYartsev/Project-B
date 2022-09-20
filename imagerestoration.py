@@ -25,9 +25,10 @@ for i in range(200, 500):
 
 #overlay mask
 masked = mask*ar
-#ruined = Image.fromarray(masked)
-#ruined.show()
-
+ruined = Image.fromarray(masked)
+ruined2=ruined.convert("L")
+ruined2.show()
+ruined2.save("ruined.jpg")
 
 #D and h values
 D = .5
@@ -78,9 +79,7 @@ for i in range(len(mask)):
 
 
 
-restored = Image.fromarray(masked)
-#restored.show()           
-
+     
                 
 
 
@@ -107,7 +106,9 @@ for k in range(0, 1000):
                 
 """
 restored = Image.fromarray(masked)
+restored=restored.convert('L')
 restored.show()
+restored.save("restored.jpg")
 
 
 def error_measure(mask, original, restored):
