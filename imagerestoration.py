@@ -18,21 +18,11 @@ im = np.array(Image.open(r"grayscale.jpg").convert('L'))
 ar = np.array(im)
 
 
-
-
 """
 #create a mask with 1's containing a square of 0's
 mask = np.ones((1000, 1000))
 for i in range(0, 50):
     mask[i][250:260] = 0
-for i in range(200, 250):
-    mask[i][400:430] = 0
-
-
-
-
-
-
 
 #save image of the mask used
 mask_show = Image.fromarray(mask*255)
@@ -81,10 +71,7 @@ masked_again_imimage = Image.fromarray(masked)
 #save image with mask overlayied on it
 masked_again_imimage_save=masked_again_imimage.convert("L")
 masked_again_imimage_save.save("masked_with_text.png")
-masked_again_imimage.show()
-
-
-
+#masked_again_imimage.show()
 
 #D and h values
 D = .5
@@ -92,12 +79,14 @@ h = 1
 
 #get position of the mask
 positions=[]
+print("Retrive the position of the mask")
 for i in  tqdm(range(len(mask))):
     for j in range(len(mask[i])):
         if mask[i][j]==0:
             positions.append((i,j))
 
 #run the numerical method
+print("Run the numerical method")
 len_mask=len(mask)
 len_mask_i=len(mask[0])
 for k in tqdm(range(1000)):
@@ -139,7 +128,7 @@ for k in tqdm(range(1000)):
 
 #save image of the restored image
 restored = Image.fromarray(masked)
-restored.show()           
+#restored.show()           
 restored2=restored.convert("L")
 restored2.save("restored.png")
                 
@@ -164,8 +153,9 @@ def error_measure(mask, original, restored):
     sigma_squared = sigma_squared/(len(positions)-1)
 
     Chi_squared_list = []
-    for p in positions:
+    for p in tqdm(positions):
         Chi_squared_list.append((original[p[0]][p[1]]-restored[p[0]][p[1]])**2)
     Chi_squared = sum(Chi_squared_list)*1/len(positions)/sigma_squared
-    print(Chi_squared)
+    #print(Chi_squared)
+print("Calculate the error")
 error_measure(mask, ar, masked)
