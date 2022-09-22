@@ -69,7 +69,8 @@ cv2.putText(whiteblankimage, text='Images', org=(300,950),
 
 #make image to array
 mask=np.array(whiteblankimage)
-mask_save=mask.convert("L")
+mask_save=Image.fromarray(mask*255)
+mask_save=mask_save.convert("L")
 mask_save.save("mask_text.png")
 
 
@@ -99,7 +100,7 @@ for i in  tqdm(range(len(mask))):
 #run the numerical method
 len_mask=len(mask)
 len_mask_i=len(mask[0])
-for k in tqdm(range(100)):
+for k in tqdm(range(1000)):
     
     for p in positions:
         i=p[0]
