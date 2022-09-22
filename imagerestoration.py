@@ -25,7 +25,7 @@ for i in range(200, 250):
 
 
 mask_show = Image.fromarray(mask*255)
-mask_show.show()
+#mask_show.show()
 #overlay mask
 masked = mask*ar
 ruined = Image.fromarray(masked)
@@ -36,51 +36,58 @@ ruined.show()
 D = .5
 h = 1
 
+positions=[]
+for i in  tqdm(range(len(mask))):
+    for j in range(len(mask[i])):
+        if mask[i][j]==0:
+            positions.append((i,j))
 
-
-
-
-for k in tqdm(range(1)):
+len_mask=len(mask)
+len_mask_i=len(mask[0])
+for k in tqdm(range(10000)):
     
-    for i in range(len(masked)):
-        for j in range(len(masked[i])):
-            #print(i,j)
-            if mask[j][i]==0:
-                if k==0:
-                    n=0
-                    len_mask=len(mask)
-                    #print(len_mask)
-                    len_mask_i=len(mask[i])
-                    #print(len_mask_i)
-                    u_0__1 = masked[i][j-1]
-                    u_0_1 = masked[i][j+1]
+    for p in positions:
+        i=p[0]
+        j=p[1]
+        if k==0:
+            n=0
+            
+            #print(len_mask_i)
+            u_0__1 = masked[i][j+1]
+            u_0_1 = masked[i][j-1]
 
-                    u_1_0 = masked[i+1][j]
-                    u__1_0 = masked[i-1][j]
-                    
-                    if i+1 >= len_mask_i:
-                        print(i+1)
-                        u_1_0=0
-                        n+=1
+            u_1_0 = masked[i-1][j]
+            u__1_0 = masked[i+1][j]
+            
+            if not i+1 >= len_mask_i and not j+1 >= len_mask:
+                u_1_0=masked[i-1][j]
+                u_0_1=masked[i][j-1]
+                n=2
 
-                    if i-1 < 0:
-                        n+=1
-                        u__1_0=0
+            if j+1 >= len_mask and not i+1 >= len_mask_i:
+                u_1_0=masked[i-1][j]
+                u_0_1=masked[i][j-1]
+                u_0__1=masked[i][j+1]
+                n=1
 
-                    if j+1 >= len_mask:
-                        print(j+1)
-                        u_0_1=0
-                        n+=1
+            if not j+1 >= len_mask and i+1 >= len_mask_i:
+                u_1_0=masked[i-1][j]
+                u_0_1=masked[i][j-1]
+                u__1_0=masked[i+1][j]
+                n=1
+            else:
+                u_0__1 = masked[i][j-1]
+                u_0_1 = masked[i][j+1]
 
-                    if j-1 < 0:
-                        u_0__1=0
-                        n+=1
+                u_1_0 = masked[i+1][j]
+                u__1_0 = masked[i-1][j]
+                n=0
 
 
-                    masked[i][j] =masked[i][j]+ D*h*(u_1_0+u__1_0+u_0_1+u_0__1-(4-n)*masked[i][j])
-                    
-                else:
-                    masked[i][j] = masked[i][j] + h*(D*masked[i-1][j]+masked[i+1][j]+masked[i][j-1]+masked[i][j+1] - D*4*masked[i][j])
+            masked[i][j] =masked[i][j]+ D*h*(u_1_0+u__1_0+u_0_1+u_0__1-(4-n)*masked[i][j])
+            
+        else:
+            masked[i][j] = masked[i][j] + D*h*(masked[i-1][j]+masked[i+1][j]+masked[i][j-1]+masked[i][j+1] - 4*masked[i][j])
 
 
 
@@ -106,17 +113,14 @@ for k in range(0, 100):
 
             if k == 0 and j != 260 and i != 50:
                 masked[i][j] = masked[i][j] + h*(D*masked[i-1][j] + D*masked[i][j-1] - D*(4-2)*masked[i][j])
+
             elif k == 0 and j == 260 and i != 50:
-
-
                 masked[i][j] = masked[i][j] + h*(D*masked[i-1][j] + D*masked[i][j-1] + D*masked[i][j+1] - D*(4-1)*masked[i][j])
+
             elif k == 0 and j != 260 and i == 50:
+                masked[i][j] = masked[i][j] + h*(D*masked[i-1][j] + D*masked[i+1][j] + D*masked[i][j-1] - D*(4-1)*masked[i][j])  
 
-
-                masked[i][j] = masked[i][j] + h*(D*masked[i-1][j] + D*masked[i+1][j] + D*masked[i][j-1] - D*(4-1)*masked[i][j])           
             else:
-
-
                 masked[i][j] = masked[i][j] + h*(D*masked[i-1][j] + D*masked[i+1][j] + D*masked[i][j-1] + D*masked[i][j+1] - D*4*masked[i][j])
                 
 
