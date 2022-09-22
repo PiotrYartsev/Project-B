@@ -20,7 +20,7 @@ ar = np.array(im)
 
 
 
-
+"""
 #create a mask with 1's containing a square of 0's
 mask = np.ones((1000, 1000))
 for i in range(0, 50):
@@ -33,7 +33,7 @@ for i in range(200, 250):
 
 
 
-"""
+
 #save image of the mask used
 mask_show = Image.fromarray(mask*255)
 mask_show2=mask_show.convert("L")
@@ -48,36 +48,39 @@ ruined2=ruined.convert("L")
 ruined2.save("ruined.png")
 """
 
-#add text to mask
-mask2 = np.ones((1000, 1000))
-text = "This is a test"
-
-
-whiteblankimage = 1 * np.ones(shape=[1000, 1000], dtype=np.uint8)
-
-
-cv2.putText(whiteblankimage, text='Ruined', org=(300,200),
+#Create a mask of 1
+whiteblankimage = np.ones((1000, 1000))
+#Add text with color 0 to the image
+cv2.putText(whiteblankimage, text='Piotr', org=(300,150),
             fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(0,0,0),
-            thickness=5, lineType=cv2.LINE_AA)
-"""
-cv2.putText(whiteblankimage, text='Ruined', org=(300,400),
+            thickness=15, lineType=cv2.LINE_AA)
+cv2.putText(whiteblankimage, text='AND', org=(300,350),
             fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(0,0,0),
-            thickness=5, lineType=cv2.LINE_AA)
-cv2.putText(whiteblankimage, text='Ruined', org=(300,600),
+            thickness=15, lineType=cv2.LINE_AA)
+cv2.putText(whiteblankimage, text='Max', org=(300,550),
             fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(0,0,0),
-            thickness=5, lineType=cv2.LINE_AA)
-cv2.putText(whiteblankimage, text='Ruined', org=(300,800),
+            thickness=15, lineType=cv2.LINE_AA)
+cv2.putText(whiteblankimage, text='Fix', org=(300,750),
             fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(0,0,0),
-            thickness=5, lineType=cv2.LINE_AA)
-"""
-#overlay mask
+            thickness=15, lineType=cv2.LINE_AA)
+cv2.putText(whiteblankimage, text='Images', org=(300,950),
+            fontFace= cv2.FONT_HERSHEY_SIMPLEX, fontScale=5, color=(0,0,0),
+            thickness=15, lineType=cv2.LINE_AA)
+
+#make image to array
 mask=np.array(whiteblankimage)
+mask_save=mask.convert("L")
+mask_save.save("mask_text.png")
 
+
+#overlay mask
 masked=ar*mask
 masked_again_imimage = Image.fromarray(masked)
+
+#save image with mask overlayied on it
+masked_again_imimage_save=masked_again_imimage.convert("L")
+masked_again_imimage_save.save("masked_with_text.png")
 masked_again_imimage.show()
-
-
 
 
 
@@ -86,12 +89,14 @@ masked_again_imimage.show()
 D = .5
 h = 1
 
+#get position of the mask
 positions=[]
 for i in  tqdm(range(len(mask))):
     for j in range(len(mask[i])):
         if mask[i][j]==0:
             positions.append((i,j))
 
+#run the numerical method
 len_mask=len(mask)
 len_mask_i=len(mask[0])
 for k in tqdm(range(100)):
@@ -163,6 +168,3 @@ def error_measure(mask, original, restored):
     Chi_squared = sum(Chi_squared_list)*1/len(positions)/sigma_squared
     print(Chi_squared)
 error_measure(mask, ar, masked)
-
-
-
