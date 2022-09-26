@@ -141,27 +141,42 @@ def error_measure(mask, original, restored):
     return Chi_squared
     #print(Chi_squared)
 
-print("Calculate the error")
+print("Calculate the error\n\n")
 #error_measure(mask, ar, masked)
 masked2=masked1
 error_from_steps=[]
-stepsize=np.linspace(1,1000,100)
 
+
+stepsize=np.logspace(0,3,30)
+print(stepsize)
+
+setpsize2=np.linspace(1,1000,10)
+maxvalud=len(stepsize)
 for i in (stepsize):
     i=int(i)
     masked1=ar*mask
-    if i==1 or i==10 or i==100 or i==500 or i==1000:
-        #save image of the restored image
-        restored = Image.fromarray(masked)
-        #restored.show()           
-        restored2=restored.convert("L")
-        restored2.save("{}_restored.png".format(i))
+    
     print("restoring for stepsize {}".format(i))
     masked1=restore_image(masked1,mask,i)
-    
+    if i in setpsize2:
+        #save image of the restored image
+        restored = Image.fromarray(masked1)
+        #restored.show()           
+        restored2=restored.convert("L")
+        restored2.save("{}_new_method_restored.png".format(i))
     print("calculating the error")
     error=error_measure(mask, ar, masked1)
     error_from_steps.append(error)
     print(error)
+    print("\n\n")
 plt.plot(stepsize,error_from_steps)
+
+#make a logorithim plot
+plt.grid()
+plt.ylim(0)
+plt.xscale("log")
+plt.xlabel("Number of steps")
+plt.ylabel("Chi^2 error")
+plt.title("Chi^2 error as a function of the number of steps")
+plt.savefig("error_vs_steps.png", bbox_inches='tight')
 plt.show()
