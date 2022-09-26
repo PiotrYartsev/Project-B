@@ -12,34 +12,12 @@ from math import sqrt
 import numpy
 from tqdm import tqdm
 import cv2
-#convert to grayscale
 
+#convert to grayscale
 im = np.array(Image.open(r"grayscale.jpg").convert('L'))
 ar = np.array(im)
 
-
-#Fixed mask
-"""
-#create a mask with 1's containing a square of 0's
-mask = np.ones((1000, 1000))
-for i in range(0, 50):
-    mask[i][250:260] = 0
-
-#save image of the mask used
-mask_show = Image.fromarray(mask*255)
-mask_show2=mask_show.convert("L")
-mask_show2.save("mask.png")
-#mask_show.show()
-
-#overlay mask
-masked = mask*ar
-ruined = Image.fromarray(masked)
-ruined.show()
-ruined2=ruined.convert("L")
-ruined2.save("ruined.png")
-"""
 def add_mask_of_text(text,ar,number):
-
     #Create a mask of 1
     whiteblankimage = np.ones((1000, 1000))
     #Add text with color 0 to the image
@@ -77,7 +55,7 @@ def add_mask_of_text(text,ar,number):
 
 #generating the mas kand overlayingit on top of 
 masked,mask=add_mask_of_text("Piotr",ar,1)
-
+masked1=masked
 
 def restore_image(masked,mask,number,iteration):
     #D and h values
@@ -86,14 +64,13 @@ def restore_image(masked,mask,number,iteration):
 
     #get position of the mask
     positions=[]
-    print("Retrive the position of the mask")
+
     for i in  tqdm(range(len(mask))):
         for j in range(len(mask[i])):
             if mask[i][j]==0:
                 positions.append((i,j))
 
     #run the numerical method
-    print("Run the numerical method")
     len_mask=len(mask)
     len_mask_i=len(mask[0])
     for k in tqdm(range(iteration)):
@@ -132,16 +109,15 @@ def restore_image(masked,mask,number,iteration):
             else:
                 masked[i][j] = masked[i][j] + D*h*(masked[i-1][j]+masked[i+1][j]+masked[i][j-1]+masked[i][j+1] - 4*masked[i][j])
 
-
     #save image of the restored image
     restored = Image.fromarray(masked)
     #restored.show()           
     restored2=restored.convert("L")
     restored2.save("{}_restored.png".format(number))
-    return restored
+    return masked
 
 #running the numerical method
-restored=restore_image(masked,mask,1,100)
+masked=restore_image(masked,mask,1_1,100)
 
 #calculate the error
 def error_measure(mask, original, restored):
@@ -166,7 +142,22 @@ def error_measure(mask, original, restored):
     for p in tqdm(positions):
         Chi_squared_list.append((original[p[0]][p[1]]-restored[p[0]][p[1]])**2)
     Chi_squared = sum(Chi_squared_list)*1/len(positions)/sigma_squared
+    return Chi_squared
     #print(Chi_squared)
 
 print("Calculate the error")
-error_measure(mask, ar, masked)
+#error_measure(mask, ar, masked)
+
+error_from_steps=[]
+stepsize=np.linspace(1,100,10)
+for i in (stepsize):
+    i=int(i)
+    print(i)
+    print("restoring for stepsize {}".format(i))
+    masked=restore_image(masked1,mask,i,i)
+    print("calculating the error")
+    error=error_measure(mask, ar, masked)
+    error_from_steps.append(error)
+    print(error)
+plt.plot(stepsize,error_from_steps)
+plt.show()
