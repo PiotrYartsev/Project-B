@@ -4,7 +4,6 @@ Created on Wed Sep 14 23:11:59 2022
 
 @author: max_n
 """
-import cv2
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
@@ -17,7 +16,7 @@ import cv2
 im = np.array(Image.open(r"grayscale.jpg").convert('L'))
 ar = np.array(im)
 
-def add_mask_of_text(text,ar,number):
+def add_mask_of_text(ar):
     #Create a mask of 1
     whiteblankimage = np.ones((1000, 1000))
     #Add text with color 0 to the image
@@ -41,7 +40,7 @@ def add_mask_of_text(text,ar,number):
     mask=np.array(whiteblankimage)
     mask_save=Image.fromarray(mask*255)
     mask_save=mask_save.convert("L")
-    mask_save.save("{}_mask_text.png".format(number))
+    mask_save.save("mask_text.png")
 
 
     #overlay mask
@@ -54,10 +53,11 @@ def add_mask_of_text(text,ar,number):
     return masked, mask
 
 #generating the mas kand overlayingit on top of 
-masked,mask=add_mask_of_text("Piotr",ar,1)
+masked,mask=add_mask_of_text(ar)
 masked1=masked
 
-def restore_image(masked,mask,number,iteration):
+def restore_image(masked1,mask,iteration):
+    masked=masked1
     #D and h values
     D = .5
     h = 1
@@ -109,15 +109,11 @@ def restore_image(masked,mask,number,iteration):
             else:
                 masked[i][j] = masked[i][j] + D*h*(masked[i-1][j]+masked[i+1][j]+masked[i][j-1]+masked[i][j+1] - 4*masked[i][j])
 
-    #save image of the restored image
-    restored = Image.fromarray(masked)
-    #restored.show()           
-    restored2=restored.convert("L")
-    restored2.save("{}_restored.png".format(number))
+
     return masked
 
 #running the numerical method
-masked=restore_image(masked,mask,1_1,100)
+#masked=restore_image(masked,mask,100)
 
 #calculate the error
 def error_measure(mask, original, restored):
@@ -147,16 +143,24 @@ def error_measure(mask, original, restored):
 
 print("Calculate the error")
 #error_measure(mask, ar, masked)
-
+masked2=masked1
 error_from_steps=[]
-stepsize=np.linspace(1,100,10)
+stepsize=np.linspace(1,1000,100)
+
 for i in (stepsize):
     i=int(i)
-    print(i)
+    masked1=ar*mask
+    if i==1 or i==10 or i==100 or i==500 or i==1000:
+        #save image of the restored image
+        restored = Image.fromarray(masked)
+        #restored.show()           
+        restored2=restored.convert("L")
+        restored2.save("{}_restored.png".format(i))
     print("restoring for stepsize {}".format(i))
-    masked=restore_image(masked1,mask,i,i)
+    masked1=restore_image(masked1,mask,i)
+    
     print("calculating the error")
-    error=error_measure(mask, ar, masked)
+    error=error_measure(mask, ar, masked1)
     error_from_steps.append(error)
     print(error)
 plt.plot(stepsize,error_from_steps)
