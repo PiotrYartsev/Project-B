@@ -54,19 +54,18 @@ def add_mask_of_text(ar):
 
 #generating the mas kand overlayingit on top of 
 masked,mask=add_mask_of_text(ar)
-masked1=masked
 
 
 #anisotropic diffusion constant
-def diffusion(i,j):
-    K = 300 #value that is guessed basically (300 is pretty good)
+def diffusion(masked,i,j,K):
+    #K = 300 #value that is guessed basically (300 is pretty good)
     div = (masked[i+1][j] - masked[i][j])**2 + (masked[i][j+1] - masked[i][j])**2
     c = np.exp(-(div/K)**2)
         
     return c
 
 
-def restore_image(masked1,mask,iteration):
+def restore_image(masked1,mask,iteration,K):
     masked=masked1
     #D and h values
     D = .5
@@ -123,17 +122,15 @@ def restore_image(masked1,mask,iteration):
                 #masked[i][j] = masked[i][j] + D*h*(masked[i-1][j]+masked[i+1][j]+masked[i][j-1]+masked[i][j+1] - 4*masked[i][j])
                 
                 #anisotropic equation
-                masked[i][j] = masked[i][j] + (((1/2)*(diffusion(i+1, j) + diffusion(i,j)))*(masked[i+1][j] - masked[i][j])-((1/2)*(diffusion(i-1, j) + diffusion(i, j)))\
-                        *(masked[i][j]-masked[i-1][j])) + (((1/2)*(diffusion(i, j+1) + diffusion(i,j)))*(masked[i][j+1] - masked[i][j])-((1/2)*(diffusion(i, j-1) + diffusion(i, j)))\
+                masked[i][j] = masked[i][j] + (((1/2)*(diffusion(masked,i+1, j,K) + diffusion(masked,i,j,K)))*(masked[i+1][j] - masked[i][j])-((1/2)*(diffusion(masked,i-1, j,K) + diffusion(masked,i, j,K)))\
+                        *(masked[i][j]-masked[i-1][j])) + (((1/2)*(diffusion(masked,i, j+1,K) + diffusion(masked,i,j,K)))*(masked[i][j+1] - masked[i][j])-((1/2)*(diffusion(masked,i, j-1,K) + diffusion(masked,i, j,K)))\
                                                                           *(masked[i][j]-masked[i][j-1]))
 
 
     return masked
 
-#running the numerical method
-masked=restore_image(masked,mask,100)
-restored = Image.fromarray(masked)
-restored.show()
+
+
 
 #calculate the error
 def error_measure(mask, original, restored):
@@ -159,16 +156,25 @@ def error_measure(mask, original, restored):
         Chi_squared_list.append((original[p[0]][p[1]]-restored[p[0]][p[1]])**2)
     Chi_squared = sum(Chi_squared_list)*1/len(positions)/sigma_squared
     return Chi_squared
-    #print(Chi_squared)
 
+
+#running the numerical method
+masked=restore_image(masked,mask,100,200)
+restored = Image.fromarray(masked)
+restored_save=restored.convert("L")
+restored_save.show()
+restored_save.save("new/restored.png")
+
+#calculate the error
 print("Calculate the error\n\n")
 print(error_measure(mask, ar, masked))
-masked2=masked1
+"""
+
 error_from_steps=[]
 
-"""
-stepsize=np.logspace(0,3,30)
-print(stepsize)
+#stepsize=np.logspace(0,3,30)
+stepsize=np.linspace(1,1000,10)
+#print(stepsize)
 
 setpsize2=np.linspace(1,1000,10)
 maxvalud=len(stepsize)
@@ -176,28 +182,27 @@ for i in (stepsize):
     i=int(i)
     masked1=ar*mask
     
-    print("restoring for stepsize {}".format(i))
-    masked1=restore_image(masked1,mask,i)
+    print("\nRestoring for K={}".format(i))
+    masked3=restore_image(masked1,mask,100,i)
     if i in setpsize2:
         #save image of the restored image
         restored = Image.fromarray(masked1)
         #restored.show()           
         restored2=restored.convert("L")
-        restored2.save("{}_new_method_restored.png".format(i))
+        restored2.save("new/K_{}_new_method_restored.png".format(i))
     print("calculating the error")
-    error=error_measure(mask, ar, masked1)
+    error=error_measure(mask, ar, masked3)
     error_from_steps.append(error)
     print(error)
     print("\n\n")
-plt.plot(stepsize,error_from_steps)
 
+plt.plot(stepsize,error_from_steps)
 #make a logorithim plot
 plt.grid()
-plt.ylim(0)
-plt.xscale("log")
-plt.xlabel("Number of steps")
+#plt.ylim(0)
+#plt.xscale("log")
+plt.xlabel("Value of K")
 plt.ylabel("Chi^2 error")
-plt.title("Chi^2 error as a function of the number of steps")
-plt.savefig("error_vs_steps.png", bbox_inches='tight')
-plt.show()
-"""
+plt.title("Chi^2 error as a function of K")
+plt.savefig("new/error_vs_K.png", bbox_inches='tight')
+plt.show()"""

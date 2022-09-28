@@ -39,7 +39,7 @@ def add_mask_of_text(ar):
     #make image to array
     mask=np.array(whiteblankimage)
     mask_save=Image.fromarray(mask*255)
-    mask_save=mask_save.convert("L")
+    C
     mask_save.save("mask_text.png")
 
 
@@ -148,7 +148,7 @@ error_from_steps=[]
 
 
 stepsize=np.logspace(0,3,30)
-print(stepsize)
+
 
 setpsize2=np.linspace(1,1000,10)
 maxvalud=len(stepsize)
@@ -156,7 +156,7 @@ for i in (stepsize):
     i=int(i)
     masked1=ar*mask
     
-    print("restoring for stepsize {}".format(i))
+    print("restoring for {} iterations".format(i))
     masked1=restore_image(masked1,mask,i)
     if i in setpsize2:
         #save image of the restored image
@@ -175,8 +175,8 @@ plt.plot(stepsize,error_from_steps)
 plt.grid()
 plt.ylim(0)
 plt.xscale("log")
-plt.xlabel("Number of steps")
+plt.xlabel("Number of iterations")
 plt.ylabel("Chi^2 error")
-plt.title("Chi^2 error as a function of the number of steps")
+plt.title("Chi^2 error as a function of the number of iterations")
 plt.savefig("error_vs_steps.png", bbox_inches='tight')
 plt.show()
