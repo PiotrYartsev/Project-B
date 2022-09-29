@@ -113,7 +113,11 @@ def restore_image(masked1,mask,iteration):
     return masked
 
 #running the numerical method
-#masked=restore_image(masked,mask,100)
+masked=restore_image(masked,mask,1)
+masked_save=Image.fromarray(masked)
+masked_save=masked_save.convert('L')
+masked_save.save("restored.png")
+
 
 #calculate the error
 def error_measure(mask, original, restored):
@@ -144,14 +148,6 @@ def error_measure(mask, original, restored):
 print("Calculate the error\n\n")
 print(error_measure(mask, ar, masked))
 
-number_pixels_masked = 0
-for n in range(len(mask)):
-    for m in range(len(mask[n])):
-        if mask[n][m] == 0:
-            number_pixels_masked += 1
-print("Number of pixels masked: ", number_pixels_masked)
-print("procentage of pixels masked: ", number_pixels_masked*100/(len(mask)*len(mask[0])))
-
 masked2=masked1
 error_from_steps=[]
 
@@ -170,9 +166,9 @@ for i in (stepsize):
     print("restoring for {} iterations".format(i))
     masked1=restore_image(masked1,mask,i)
     if i in setpsize2:
-        #save image of the restored image
+
         restored = Image.fromarray(masked1)
-        #restored.show()           
+    
         restored2=restored.convert("L")
         restored2.save("{}_new_method_restored.png".format(i))
     print("calculating the error")
@@ -184,7 +180,8 @@ plt.plot(stepsize,error_from_steps, label="iterations vs error")
 
 x=min(error_from_steps)
 y=stepsize[error_from_steps.index(x)]
-print("the minimum error is {} for {} iterations".format(x,y))
+
+print("The minimum error is {} for {} iterations".format(x,y))
 plt.plot(y,x,marker="o",label="minimum error at {} iterations".format(y))
 #make a logorithim plot
 plt.grid()
