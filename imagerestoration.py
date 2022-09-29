@@ -39,7 +39,7 @@ def add_mask_of_text(ar):
     #make image to array
     mask=np.array(whiteblankimage)
     mask_save=Image.fromarray(mask*255)
-    C
+    mask_save=mask_save.convert('L')
     mask_save.save("mask_text.png")
 
 
@@ -142,15 +142,26 @@ def error_measure(mask, original, restored):
     #print(Chi_squared)
 
 print("Calculate the error\n\n")
-#error_measure(mask, ar, masked)
+print(error_measure(mask, ar, masked))
+
+number_pixels_masked = 0
+for n in range(len(mask)):
+    for m in range(len(mask[n])):
+        if mask[n][m] == 0:
+            number_pixels_masked += 1
+print("Number of pixels masked: ", number_pixels_masked)
+print("procentage of pixels masked: ", number_pixels_masked*100/(len(mask)*len(mask[0])))
+
 masked2=masked1
 error_from_steps=[]
 
 
-stepsize=np.logspace(0,3,30)
+stepsize=np.logspace(0,3,60)
+setpsize=[int(i) for i in stepsize]
+stepsize=list(set(setpsize))
+stepsize.sort()
 
-
-setpsize2=np.linspace(1,1000,10)
+setpsize2=(1,2,5,10,20,50,100,300,600,1000)
 maxvalud=len(stepsize)
 for i in (stepsize):
     i=int(i)
@@ -169,14 +180,21 @@ for i in (stepsize):
     error_from_steps.append(error)
     print(error)
     print("\n\n")
-plt.plot(stepsize,error_from_steps)
+plt.plot(stepsize,error_from_steps, label="iterations vs error")
 
+x=min(error_from_steps)
+y=stepsize[error_from_steps.index(x)]
+print("the minimum error is {} for {} iterations".format(x,y))
+plt.plot(y,x,marker="o",label="minimum error at {} iterations".format(y))
 #make a logorithim plot
 plt.grid()
 plt.ylim(0)
 plt.xscale("log")
+
 plt.xlabel("Number of iterations")
 plt.ylabel("Chi^2 error")
 plt.title("Chi^2 error as a function of the number of iterations")
 plt.savefig("error_vs_steps.png", bbox_inches='tight')
+#put legend i top right corner
+plt.legend(loc="upper right")
 plt.show()
