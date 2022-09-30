@@ -113,7 +113,7 @@ def restore_image(masked1,mask,iteration):
     return masked
 
 #running the numerical method
-masked=restore_image(masked,mask,1)
+masked=restore_image(masked,mask,67)
 masked_save=Image.fromarray(masked)
 masked_save=masked_save.convert('L')
 masked_save.save("restored.png")
@@ -147,7 +147,7 @@ def error_measure(mask, original, restored):
 
 print("Calculate the error\n\n")
 print(error_measure(mask, ar, masked))
-
+"""
 masked2=masked1
 error_from_steps=[]
 
@@ -194,4 +194,4 @@ plt.title("Chi^2 error as a function of the number of iterations")
 plt.savefig("error_vs_steps.png", bbox_inches='tight')
 #put legend i top right corner
 plt.legend(loc="upper right")
-plt.show()
+plt.show()"""

@@ -74,7 +74,7 @@ def restore_image(masked1,mask,iteration,K):
     #get position of the mask
     positions=[]
 
-    for i in  tqdm(range(len(mask))):
+    for i in  (range(len(mask))):
         for j in range(len(mask[i])):
             if mask[i][j]==0:
                 positions.append((i,j))
@@ -124,7 +124,7 @@ def restore_image(masked1,mask,iteration,K):
                 #anisotropic equation
                 masked[i][j] = masked[i][j] + (((1/2)*(diffusion(masked,i+1, j,K) + diffusion(masked,i,j,K)))*(masked[i+1][j] - masked[i][j])-((1/2)*(diffusion(masked,i-1, j,K) + diffusion(masked,i, j,K)))\
                         *(masked[i][j]-masked[i-1][j])) + (((1/2)*(diffusion(masked,i, j+1,K) + diffusion(masked,i,j,K)))*(masked[i][j+1] - masked[i][j])-((1/2)*(diffusion(masked,i, j-1,K) + diffusion(masked,i, j,K)))\
-                                                                          *(masked[i][j]-masked[i][j-1]))
+                        *(masked[i][j]-masked[i][j-1]))
 
 
     return masked
@@ -159,27 +159,27 @@ def error_measure(mask, original, restored):
 
 
 #running the numerical method
-"""
-masked=restore_image(masked,mask,100,200)
+
+masked=restore_image(masked,mask,100,248)
 restored = Image.fromarray(masked)
 restored_save=restored.convert("L")
 restored_save.show()
-restored_save.save("new/restored.png")
+restored_save.save("new_method/restored.png")
 
 #calculate the error
 print("Calculate the error\n\n")
 print(error_measure(mask, ar, masked))
-
 """
+
 error_from_steps=[]
 
 #stepsize=np.logspace(0,3,30)
-stepsize=np.linspace(1,1000,10)
+stepsize=np.linspace(240,260,10)
 #print(stepsize)
 
 setpsize2=np.linspace(1,1000,10)
 maxvalud=len(stepsize)
-for i in (stepsize):
+for i in tqdm(stepsize):
     i=int(i)
     masked1=ar*mask
     
@@ -190,7 +190,7 @@ for i in (stepsize):
         restored = Image.fromarray(masked1)
         #restored.show()           
         restored2=restored.convert("L")
-        restored2.save("new/K_{}_new_method_restored.png".format(i))
+        restored2.save("new_method/K_{}_new_method_restored.png".format(i))
     print("calculating the error")
     error=error_measure(mask, ar, masked3)
     error_from_steps.append(error)
@@ -198,10 +198,13 @@ for i in (stepsize):
     print("\n\n")
 
 plt.plot(stepsize,error_from_steps)
+
 x=min(error_from_steps)
 y=stepsize[error_from_steps.index(x)]
-print("The minimum error is {} for value K={}".format(x,y))
+print("The minimum error is {} for K={}".format(x,y))
 plt.plot(y,x,marker="o",label="minimum error at {} iterations".format(y))
+print("The minimum error is {} for value K={}".format(x,y))
+
 #make a logorithim plot
 plt.grid()
 #plt.ylim(0)
@@ -209,5 +212,5 @@ plt.grid()
 plt.xlabel("Value of K")
 plt.ylabel("Chi^2 error")
 plt.title("Chi^2 error as a function of K")
-plt.savefig("new/error_vs_K.png", bbox_inches='tight')
-plt.show()
+plt.savefig("new_method/error_vs_K.png", bbox_inches='tight')
+plt.show()"""
