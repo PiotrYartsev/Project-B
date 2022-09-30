@@ -143,39 +143,46 @@ def error_measure(mask, original, restored):
         Chi_squared_list.append((original[p[0]][p[1]]-restored[p[0]][p[1]])**2)
     Chi_squared = sum(Chi_squared_list)*1/len(positions)/sigma_squared
     return Chi_squared
-    #print(Chi_squared)
+
 
 print("Calculate the error\n\n")
 print(error_measure(mask, ar, masked))
-"""
+
 masked2=masked1
 error_from_steps=[]
 
 
+#at what values to evaluate the error
 stepsize=np.logspace(0,3,60)
 setpsize=[int(i) for i in stepsize]
 stepsize=list(set(setpsize))
 stepsize.sort()
 
+#when to save the image
 setpsize2=(1,2,5,10,20,50,100,300,600,1000)
 maxvalud=len(stepsize)
 for i in (stepsize):
     i=int(i)
+    #generate the mask and overlay it on the image
     masked1=ar*mask
     
     print("restoring for {} iterations".format(i))
+    #run the numerical method
     masked1=restore_image(masked1,mask,i)
+    #save if needed
     if i in setpsize2:
 
         restored = Image.fromarray(masked1)
     
         restored2=restored.convert("L")
         restored2.save("{}_new_method_restored.png".format(i))
+    #calculate the error
     print("calculating the error")
     error=error_measure(mask, ar, masked1)
     error_from_steps.append(error)
     print(error)
     print("\n\n")
+    
 plt.plot(stepsize,error_from_steps, label="iterations vs error")
 
 x=min(error_from_steps)
